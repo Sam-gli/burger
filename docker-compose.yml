@@ -1,53 +1,59 @@
-version: '3.8'
-
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: ipp-burger-app
-    container_name: ipp-burger-app
-    restart: unless-stopped
-    working_dir: /var/www
-    volumes:
-      - ./:/var/www
-    networks:
-      - ipp-network
-    depends_on:
-      - db
+    laravel:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: abdou277/laravel_image:latest
+        container_name: laravel-app
+        working_dir: /var/www
+        volumes:
+            - .:/var/www
+        networks:
+            - ipp_vp
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        ports:
+            - "80:80"
+        volumes:
+            - .:/var/www
+            - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - laravel
+        networks:
+            - ipp_vp
+    database:
+        image: postgres:15
+        container_name: ipp-burger-db
+        environment:
+        POSTGRES_DB: burger_ipp
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: passer
+        ports:
+        - "5432:5432"
+        volumes:
+        - db_data:/var/lib/postgresql/data
+        networks:
+        - ipp_vp
 
-  webserver:
-    image: nginx:alpine
-    container_name: ipp-burger-nginx
-    restart: unless-stopped
-    ports:
-      - "8000:80"
-    volumes:
-      - ./:/var/www
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
-    networks:
-      - ipp-network
+    pgadmin:
+        image: pgadmin/pgadmin
+        container_name: pgadmin
+        environment:
+        PGADMIN_DEFAULT_EMAIL: admin@exemple.com
+        PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+        - "8080:80"
+        depends_on:
+        - database
+        networks:
+        - ipp_vp
 
-  db:
-    image: postgres:15
-    container_name: ipp-burger-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: burger_ipp
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: passer
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - ipp-network
+
 
 networks:
-  ipp-network:
-    driver: bridge
+    ipp_vp:
 
 volumes:
-  pgdata:
+    db_data:
+
