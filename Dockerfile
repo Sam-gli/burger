@@ -26,11 +26,11 @@ RUN curl -sS https://getcomposer.org/installer | php \
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Installer les dépendances Laravel
-RUN composer install --no-interaction --optimize-autoloader
-
 # Copier les fichiers Laravel dans le conteneur
 COPY . .
+
+# Installer les dépendances Laravel
+RUN composer install --no-interaction --optimize-autoloader
 
 
 # Fixer les permissions (optionnel mais recommandé)
