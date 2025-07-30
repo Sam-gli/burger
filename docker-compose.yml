@@ -39,7 +39,7 @@ services:
       - ipp_vp
 
   pgadmin:
-    image: pgadmin/pgadmin
+    image: dpage/pgadmin4
     container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@exemple.com
