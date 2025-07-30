@@ -1,0 +1,81 @@
+name: Laravel CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: burger_ipp
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: passer
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: burger_ipp
+      DB_USERNAME: postgres
+      DB_PASSWORD: passer
+      APP_ENV: testing
+      APP_KEY: base64:yDUMMYKEY1234567890abcdefghijklmnopqrstuvwxyz==
+      CACHE_DRIVER: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+
+    steps:
+      - name: 📥 Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: 🧰 Installer PHP, Composer et extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_pgsql, mbstring, bcmath, gd
+          coverage: none
+
+      - name: 📦 Installer les dépendances Composer
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      - name: 🔑 Copier fichier .env.testing et générer la clé
+        run: cp .env.testing .env && php artisan key:generate
+
+      - name: 🧪 Lancer les tests Laravel
+        run: php artisan test
+
+  docker-build-push:
+    needs: laravel-tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Cloner le dépôt
+        uses: actions/checkout@v3
+
+      - name: 🔐 Login DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: 🐳 Build and Push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ipp-burger:latest
