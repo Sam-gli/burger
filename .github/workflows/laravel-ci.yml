@@ -55,6 +55,12 @@ jobs:
       - name: 🔑 Copier fichier .env.testing et générer la clé
         run: cp .env.testing .env && php artisan key:generate
 
+      - name: 🛠️ Lancer les migrations
+        run: php artisan migrate --force
+
+      - name: 🌱 (Optionnel) Seeder la base de données
+        run: php artisan db:seed --force
+
       - name: 🧪 Lancer les tests Laravel
         run: php artisan test
 
