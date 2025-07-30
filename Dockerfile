@@ -2,7 +2,6 @@ FROM php:8.2-fpm
 
 # Installer les bibliothèques nécessaires, y compris libjpeg-dev
 RUN apt-get update && apt-get install -y \
-
     build-essential \
     libpng-dev \
     libonig-dev \
@@ -27,11 +26,11 @@ RUN curl -sS https://getcomposer.org/installer | php \
 # Définir le répertoire de travail
 WORKDIR /var/www/html
 
-# Copier les fichiers Laravel dans le conteneur
-COPY . .
-
 # Installer les dépendances Laravel
 RUN composer install --no-interaction --optimize-autoloader
+
+# Copier les fichiers Laravel dans le conteneur
+COPY . .
 
 
 # Fixer les permissions (optionnel mais recommandé)
