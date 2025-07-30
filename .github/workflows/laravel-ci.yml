@@ -33,7 +33,7 @@ jobs:
       DB_USERNAME: postgres
       DB_PASSWORD: passer
       APP_ENV: testing
-      APP_KEY: base64:yDUMMYKEY1234567890abcdefghijklmnopqrstuvwxyz==
+      # APP_KEY: base64:hgXqveRsmMInMnO9m6t1qyF0NiGITSl0M3JgwQSSLkw=
       CACHE_DRIVER: array
       SESSION_DRIVER: array
       QUEUE_CONNECTION: sync
