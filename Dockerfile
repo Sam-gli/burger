@@ -2,7 +2,7 @@ FROM php:8.2-fpm
 
 # Installer les bibliothèques nécessaires, y compris libjpeg-dev
 RUN apt-get update && apt-get install -y \
-    build-essential \
+    
     libpng-dev \
     libonig-dev \
     libxml2-dev \
