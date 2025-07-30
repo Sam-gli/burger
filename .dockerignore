@@ -1,6 +1,5 @@
 # .dockerignore
 public/storage
 node_modules
-vendor
 .env
 .git
